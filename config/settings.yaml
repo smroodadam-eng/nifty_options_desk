@@ -1,0 +1,15 @@
+﻿project: Nifty Options Desk
+version: 1.0.0
+
+risk_rules:
+  initial_capital: 100000.0
+  max_per_trade_loss: 900.0
+  max_daily_loss: 2000.0
+  max_structures: 1
+
+market_rules:
+  instrument: NIFTY
+  lot_size: 25
+  start_trading_time: "10:00"
+  cutoff_trading_time: "14:30"
+  force_exit_time: "14:45"
