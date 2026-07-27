@@ -31,7 +31,16 @@ jobs:
         run: |
           mkdir -p package
           pip install --target ./package -r requirements.txt
+          
+          # Clean up unnecessary heavy subdirectories & compiled files to stay under 250MB unzipped limit
           cd package
+          find . -type d -name "tests" -exec rm -rf {} +
+          find . -type d -name "test" -exec rm -rf {} +
+          find . -type d -name "__pycache__" -exec rm -rf {} +
+          find . -type f -name "*.pyc" -delete
+          find . -type f -name "*.pyo" -delete
+          find . -type d -name "*.dist-info" -exec rm -rf {} +
+          
           zip -r ../deployment.zip .
           cd ..
           zip -g deployment.zip -r src/
@@ -45,7 +54,10 @@ jobs:
 
       - name: Upload to S3 and Deploy to Lambda
         run: |
+          echo "Uploading optimized package to S3..."
           aws s3 cp deployment.zip s3://nifty-quant-desk-logs-2026/deployment.zip
+
+          echo "Deploying S3 package to AWS Lambda..."
           aws lambda update-function-code \
             --function-name nifty_options_engine \
             --s3-bucket nifty-quant-desk-logs-2026 \
